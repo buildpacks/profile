@@ -1,0 +1,2 @@
+# profile
+.profile utility buildpack
