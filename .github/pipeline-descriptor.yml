@@ -7,7 +7,7 @@ codeowners:
   owner: "@buildpacks/buildpack-authors-tooling-maintainers"
 
 package:
-  repository:     docker.io/buildpacks/profile
+  repository:     docker.io/buildpacksio/profile
   register:       true
   registry_token: ${{ secrets.GITHUB_TOKEN }}
 
