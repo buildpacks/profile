@@ -188,7 +188,7 @@ jobs:
                     --format "${FORMAT}"
                 fi
               env:
-                PACKAGES: docker.io/buildpacks/profile
+                PACKAGES: docker.io/buildpacksio/profile
                 PUBLISH: "true"
                 VERSION: ${{ steps.version.outputs.version }}
                 VERSION_MAJOR: ${{ steps.version.outputs.version-major }}
@@ -218,7 +218,7 @@ jobs:
             - if: ${{ true }}
               uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:4.0.1
               with:
-                address: docker.io/buildpacks/profile@${{ steps.package.outputs.digest }}
+                address: docker.io/buildpacksio/profile@${{ steps.package.outputs.digest }}
                 id: buildpacksio/profile
                 token: ${{ secrets.GITHUB_TOKEN }}
                 version: ${{ steps.version.outputs.version }}
