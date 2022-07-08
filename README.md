@@ -1,4 +1,4 @@
-# `docker.io/buildpacks/profile`
+# `docker.io/buildpacksio/profile`
 
 The Profile Buildpack is a Cloud Native Buildpack that implements the behavior of `.profile` scripts. A `.profile` script is executed prior to the start of an application.
 
