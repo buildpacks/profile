@@ -1,0 +1,18 @@
+github:
+  username: ${{ secrets.GITHUB_USERNAME }}
+  token:    ${{ secrets.GITHUB_TOKEN }}
+
+codeowners:
+- path:  "*"
+  owner: "@buildpacks/buildpack-authors-tooling-maintainers"
+
+package:
+  repository:     docker.io/buildpacksio/profile
+  register:       true
+  registry_token: ${{ secrets.GITHUB_TOKEN }}
+
+docker_credentials:
+- registry: docker.io
+  username: ${{ secrets.DOCKER_USER }}
+  password: ${{ secrets.DOCKER_PASS }}
+

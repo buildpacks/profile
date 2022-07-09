@@ -12,7 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-bin/
-dependencies/
-package/
-scratch/
+api = "0.8"
+
+[buildpack]
+id       = "buildpacksio/profile"
+name     = "Profile Buildpack"
+version  = "{{.version}}"
+homepage = "https://github.com/buildpacks/profile"
+
+[[stacks]]
+id = "*"
+
+[metadata]
+pre-package   = "scripts/build.sh"
+include-files = [
+  "LICENSE",
+  "NOTICE",
+  "README.md",
+  "bin/build",
+  "bin/detect",
+  "bin/main",
+  "buildpack.toml",
+]
