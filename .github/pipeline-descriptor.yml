@@ -1,5 +1,5 @@
 github:
-  username: ${{ env.GITHUB_ACTOR }}
+  username: buildpack-bot
   token:    ${{ secrets.GITHUB_TOKEN }}
 
 codeowners:

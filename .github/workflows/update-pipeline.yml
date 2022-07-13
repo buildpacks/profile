@@ -64,7 +64,7 @@ jobs:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - uses: peter-evans/create-pull-request@v4
               with:
-                author: ${{ env.GITHUB_ACTOR }} <${{ env.GITHUB_ACTOR }}@users.noreply.github.com>
+                author: buildpack-bot <buildpack-bot@users.noreply.github.com>
                 body: |-
                     Bumps pipeline from `${{ steps.pipeline.outputs.old-version }}` to `${{ steps.pipeline.outputs.new-version }}`.
 
