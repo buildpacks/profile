@@ -1,5 +1,5 @@
 github:
-  username: ${{ secrets.GITHUB_USERNAME }}
+  username: ${{ secrets.GITHUB_ACTOR }}
   token:    ${{ secrets.GITHUB_TOKEN }}
 
 codeowners:
