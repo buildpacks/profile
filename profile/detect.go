@@ -17,12 +17,31 @@
 package profile
 
 import (
+	"os"
+	"os/exec"
+	"path/filepath"
+
 	"github.com/buildpacks/libcnb"
 )
 
 func Detect(context libcnb.DetectContext) (libcnb.DetectResult, error) {
 	// NOTE: the logger is not passed into this function, that will likely be a change in libcnbv2
 
-	// TODO: implement detection logic
+	_, shErr := exec.LookPath("bash")
+
+	profilePath := filepath.Join(context.ApplicationPath, scriptName)
+	if _, err := os.Stat(profilePath); shErr == nil && !os.IsNotExist(err) {
+		return libcnb.DetectResult{Pass: true, Plans: []libcnb.BuildPlan{
+			{
+				Provides: []libcnb.BuildPlanProvide{{
+					Name: profileName,
+				}},
+				Requires: []libcnb.BuildPlanRequire{{
+					Name: profileName,
+				}},
+			},
+		}}, nil
+	}
+
 	return libcnb.DetectResult{Pass: false}, nil
 }

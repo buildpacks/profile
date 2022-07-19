@@ -17,13 +17,51 @@
 package profile
 
 import (
+	_ "embed"
+	"os"
+
 	"github.com/buildpacks/libcnb"
 )
 
+//go:embed execd_wrapper.sh
+var execDScript string
+
 func Build(context libcnb.BuildContext) (libcnb.BuildResult, error) {
 	// NOTE: the logger is not passed into this function, that will likely be a change in libcnbv2
-
 	result := libcnb.NewBuildResult()
-	// TODO: implement build actions
+
+	layer, err := context.Layers.Layer(profileName)
+
+	if err != nil {
+		return result, err
+	}
+
+	execPath := layer.Exec.FilePath(execDScriptName)
+
+	err = os.MkdirAll(layer.Exec.Path, os.ModePerm)
+	if err != nil {
+		return result, err
+	}
+
+	f, err := os.Create(execPath)
+	if err != nil {
+		return result, err
+	}
+	defer f.Close()
+
+	_, err = f.WriteString(execDScript)
+	if err != nil {
+		return result, err
+	}
+
+	err = os.Chmod(execPath, 0755)
+	if err != nil {
+		return result, err
+	}
+
+	layer.Launch = true
+	layer.Cache = true
+	result.Layers = append(result.Layers, layer)
+
 	return result, nil
 }
