@@ -17,14 +17,11 @@
 package profile
 
 import (
-	_ "embed"
 	"os"
+	"path/filepath"
 
 	"github.com/buildpacks/libcnb"
 )
-
-//go:embed execd_wrapper.sh
-var execDScript string
 
 func Build(context libcnb.BuildContext) (libcnb.BuildResult, error) {
 	// NOTE: the logger is not passed into this function, that will likely be a change in libcnbv2
@@ -43,13 +40,18 @@ func Build(context libcnb.BuildContext) (libcnb.BuildResult, error) {
 		return result, err
 	}
 
+	execDScript, err := os.ReadFile(filepath.Join(context.Buildpack.Path, "execd_wrapper.sh"))
+	if err != nil {
+		return result, err
+	}
+
 	f, err := os.Create(execPath)
 	if err != nil {
 		return result, err
 	}
 	defer f.Close()
 
-	_, err = f.WriteString(execDScript)
+	_, err = f.Write(execDScript)
 	if err != nil {
 		return result, err
 	}

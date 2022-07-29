@@ -32,5 +32,6 @@ include-files = [
   "bin/build",
   "bin/detect",
   "bin/main",
+  "bin/execd_wraper.sh",
   "buildpack.toml",
 ]

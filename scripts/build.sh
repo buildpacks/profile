@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 GOOS="linux" go build -ldflags='-s -w' -o bin/main github.com/buildpacks/profile/cmd/main
 
 if [ "${STRIP:-false}" != "false" ]; then
@@ -14,3 +15,4 @@ fi
 
 ln -fs main bin/build
 ln -fs main bin/detect
+cp ${SCRIPT_DIR}/execd_wrapper.sh bin/execd_wrapper.sh
