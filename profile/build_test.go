@@ -41,7 +41,7 @@ func (b BuildTest) SetupGomega(t *testing.T) BuildTest {
 
 func (b BuildTest) SetupWorkspace() BuildTest {
 	var err error
-	b.context.Buildpack.Path = "../scripts"
+	b.context.Buildpack.Path = "../"
 	b.context.ApplicationPath, err = os.MkdirTemp("", "profile")
 	b.expect(err).NotTo(HaveOccurred())
 	profilePath := filepath.Join(b.context.ApplicationPath, ".profile")
@@ -87,7 +87,6 @@ func TestBuildExecutes(t *testing.T) {
 			LayerTypes: libcnb.LayerTypes{
 				Build:  false,
 				Launch: true,
-				Cache:  true,
 			},
 			BuildEnvironment:  libcnb.Environment{},
 			LaunchEnvironment: libcnb.Environment{},
