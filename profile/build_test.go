@@ -101,5 +101,5 @@ func TestBuildExecutes(t *testing.T) {
 		PersistentMetadata: map[string]interface{}{},
 	}))
 
-	Expect(filepath.Join(ctx.Layers.Path, "profile", "exec.d", "dotprofile.sh")).To(BeAnExistingFile())
+	Expect(filepath.Join(ctx.Layers.Path, "profile", "exec.d", profile.ExecDScriptName)).To(BeAnExistingFile())
 }

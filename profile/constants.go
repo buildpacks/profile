@@ -3,4 +3,4 @@ package profile
 // Constants
 const profileName = "profile"
 const scriptName = ".profile"
-const execDScriptName = "dotprofile.sh"
+const ExecDScriptName = "profiled-wrapper.sh"

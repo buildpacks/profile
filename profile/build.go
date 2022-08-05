@@ -33,7 +33,7 @@ func Build(context libcnb.BuildContext) (libcnb.BuildResult, error) {
 		return result, err
 	}
 
-	execPath := layer.Exec.FilePath(execDScriptName)
+	execPath := layer.Exec.FilePath(ExecDScriptName)
 
 	err = os.MkdirAll(layer.Exec.Path, os.ModePerm)
 	if err != nil {
