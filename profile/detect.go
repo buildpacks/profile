@@ -31,16 +31,7 @@ func Detect(context libcnb.DetectContext) (libcnb.DetectResult, error) {
 
 	profilePath := filepath.Join(context.ApplicationPath, scriptName)
 	if _, err := os.Stat(profilePath); shErr == nil && !os.IsNotExist(err) {
-		return libcnb.DetectResult{Pass: true, Plans: []libcnb.BuildPlan{
-			{
-				Provides: []libcnb.BuildPlanProvide{{
-					Name: profileName,
-				}},
-				Requires: []libcnb.BuildPlanRequire{{
-					Name: profileName,
-				}},
-			},
-		}}, nil
+		return libcnb.DetectResult{Pass: true, Plans: []libcnb.BuildPlan{}}, nil
 	}
 
 	return libcnb.DetectResult{Pass: false}, nil

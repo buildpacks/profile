@@ -72,14 +72,7 @@ func TestDetectPassesWithProfileScript(t *testing.T) {
 	Expect(os.WriteFile(filepath.Join(ctx.ApplicationPath, ".profile"), []byte(`echo "Hello World!"`), 0600))
 
 	Expect(profile.Detect(ctx)).To(Equal(libcnb.DetectResult{
-		Pass: true,
-		Plans: []libcnb.BuildPlan{{
-			Provides: []libcnb.BuildPlanProvide{{
-				Name: "profile",
-			}},
-			Requires: []libcnb.BuildPlanRequire{{
-				Name: "profile",
-			}},
-		}},
+		Pass:  true,
+		Plans: []libcnb.BuildPlan{},
 	}))
 }

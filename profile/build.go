@@ -40,7 +40,7 @@ func Build(context libcnb.BuildContext) (libcnb.BuildResult, error) {
 		return result, err
 	}
 
-	execDScript, err := os.ReadFile(filepath.Join(context.Buildpack.Path, "scripts", "execd_wrapper.sh"))
+	execDScript, err := os.ReadFile(filepath.Join(context.Buildpack.Path, "scripts", "profiled-wrapper.sh"))
 	if err != nil {
 		return result, err
 	}

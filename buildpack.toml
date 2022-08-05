@@ -32,6 +32,6 @@ include-files = [
   "bin/build",
   "bin/detect",
   "bin/main",
-  "scripts/execd_wrapper.sh",
+  "scripts/profiled-wrapper.sh",
   "buildpack.toml",
 ]
