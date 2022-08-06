@@ -17,13 +17,52 @@
 package profile
 
 import (
+	"os"
+	"path/filepath"
+
 	"github.com/buildpacks/libcnb"
 )
 
 func Build(context libcnb.BuildContext) (libcnb.BuildResult, error) {
 	// NOTE: the logger is not passed into this function, that will likely be a change in libcnbv2
-
 	result := libcnb.NewBuildResult()
-	// TODO: implement build actions
+
+	layer, err := context.Layers.Layer(profileName)
+
+	if err != nil {
+		return result, err
+	}
+
+	execPath := layer.Exec.FilePath(ExecDScriptName)
+
+	err = os.MkdirAll(layer.Exec.Path, os.ModePerm)
+	if err != nil {
+		return result, err
+	}
+
+	execDScript, err := os.ReadFile(filepath.Join(context.Buildpack.Path, "scripts", "profiled-wrapper.sh"))
+	if err != nil {
+		return result, err
+	}
+
+	f, err := os.Create(execPath)
+	if err != nil {
+		return result, err
+	}
+	defer f.Close()
+
+	_, err = f.Write(execDScript)
+	if err != nil {
+		return result, err
+	}
+
+	err = os.Chmod(execPath, 0755)
+	if err != nil {
+		return result, err
+	}
+
+	layer.Launch = true
+	result.Layers = append(result.Layers, layer)
+
 	return result, nil
 }

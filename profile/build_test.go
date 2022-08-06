@@ -18,6 +18,7 @@ package profile_test
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	. "github.com/onsi/gomega"
@@ -40,8 +41,26 @@ func (b BuildTest) SetupGomega(t *testing.T) BuildTest {
 
 func (b BuildTest) SetupWorkspace() BuildTest {
 	var err error
+	b.context.Buildpack.Path = "../"
 	b.context.ApplicationPath, err = os.MkdirTemp("", "profile")
 	b.expect(err).NotTo(HaveOccurred())
+	profilePath := filepath.Join(b.context.ApplicationPath, ".profile")
+
+	f, err := os.Create(profilePath)
+	b.expect(err).NotTo(HaveOccurred())
+	defer f.Close()
+
+	b.expect(err).To(BeNil())
+
+	_, err = f.WriteString(
+		`
+echo "Hello world"
+HELLO="world"
+export HELLO
+		`,
+	)
+	b.expect(err).NotTo(HaveOccurred())
+
 	return b
 }
 
@@ -51,22 +70,36 @@ func (b BuildTest) RemoveWorkspace() BuildTest {
 }
 
 func (b BuildTest) Build() (libcnb.BuildContext, ExpectFunc, AfterFunc) {
-	return b.context, b.expect, func() { b.RemoveWorkspace() }
+	outputPath, _ := os.MkdirTemp("", "dotprofile_out")
+	os.MkdirAll(outputPath, os.ModePerm)
+	b.context.Layers.Path = outputPath
+	return b.context, b.expect, func() {
+		b.RemoveWorkspace()
+		os.RemoveAll(outputPath)
+	}
 }
 
-func TestBuildDoesNothingWithoutPlanEntry(t *testing.T) {
+func TestBuildExecutes(t *testing.T) {
 	ctx, Expect, After := BuildTest{}.SetupGomega(t).SetupWorkspace().Build()
 	defer After()
+	Expect(profile.Build(ctx)).To(Equal(libcnb.BuildResult{
+		Layers: []libcnb.Layer{{
+			LayerTypes: libcnb.LayerTypes{
+				Build:  false,
+				Launch: true,
+			},
+			BuildEnvironment:  libcnb.Environment{},
+			LaunchEnvironment: libcnb.Environment{},
+			SharedEnvironment: libcnb.Environment{},
+			Name:              "profile",
+			Path:              filepath.Join(ctx.Layers.Path, "profile"),
+			Profile:           libcnb.Profile{},
+			Exec: libcnb.Exec{
+				Path: filepath.Join(ctx.Layers.Path, "profile", "exec.d"),
+			},
+		}},
+		PersistentMetadata: map[string]interface{}{},
+	}))
 
-	Expect(profile.Build(ctx)).To(Equal(libcnb.NewBuildResult()))
-}
-
-func TestBuildExecutesWithPlanEntry(t *testing.T) {
-	ctx, Expect, After := BuildTest{}.SetupGomega(t).SetupWorkspace().Build()
-	defer After()
-
-	// TODO: test setup for a working build
-
-	// TODO: test validation for a working build
-	Expect(profile.Build(ctx)).To(Equal(libcnb.NewBuildResult()))
+	Expect(filepath.Join(ctx.Layers.Path, "profile", "exec.d", profile.ExecDScriptName)).To(BeAnExistingFile())
 }
