@@ -30,44 +30,37 @@ import (
 )
 
 type ExpectFunc func(actual interface{}, extra ...interface{}) types.Assertion
-type AfterFunc func()
 
 type DetectTest struct {
+	test    *testing.T
 	context libcnb.DetectContext
 	expect  ExpectFunc
 }
 
-func (d DetectTest) SetupGomega(t *testing.T) DetectTest {
-	d.expect = NewGomegaWithT(t).Expect
-	return d
+func NewDetectTestBuilder(t *testing.T) DetectTest {
+	return DetectTest{
+		test:   t,
+		expect: NewGomegaWithT(t).Expect,
+	}
 }
 
 func (d DetectTest) SetupWorkspace() DetectTest {
-	var err error
-	d.context.ApplicationPath, err = os.MkdirTemp("", "profile")
-	d.expect(err).NotTo(HaveOccurred())
+	d.context.ApplicationPath = d.test.TempDir()
 	return d
 }
 
-func (d DetectTest) RemoveWorkspace() DetectTest {
-	d.expect(os.RemoveAll(d.context.ApplicationPath)).To(Succeed())
-	return d
-}
-
-func (d DetectTest) Build() (libcnb.DetectContext, ExpectFunc, AfterFunc) {
-	return d.context, d.expect, func() { d.RemoveWorkspace() }
+func (d DetectTest) Build() (libcnb.DetectContext, ExpectFunc) {
+	return d.context, d.expect
 }
 
 func TestDetectFailsWithoutProfileScript(t *testing.T) {
-	ctx, Expect, After := DetectTest{}.SetupGomega(t).SetupWorkspace().Build()
-	defer After()
+	ctx, Expect := NewDetectTestBuilder(t).SetupWorkspace().Build()
 
 	Expect(profile.Detect(ctx)).To(Equal(libcnb.DetectResult{}))
 }
 
 func TestDetectPassesWithProfileScript(t *testing.T) {
-	ctx, Expect, After := DetectTest{}.SetupGomega(t).SetupWorkspace().Build()
-	defer After()
+	ctx, Expect := NewDetectTestBuilder(t).SetupWorkspace().Build()
 
 	Expect(os.WriteFile(filepath.Join(ctx.ApplicationPath, ".profile"), []byte(`echo "Hello World!"`), 0600))
 
