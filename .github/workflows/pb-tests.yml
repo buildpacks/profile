@@ -1,11 +1,12 @@
-name: Create Package
+name: Tests
 "on":
-    release:
-        types:
-            - published
+    pull_request: {}
+    push:
+        branches:
+            - main
 jobs:
     create-package:
-        name: Create Package
+        name: Create Package Test
         runs-on:
             - ubuntu-latest
         steps:
@@ -18,33 +19,14 @@ jobs:
                 username: ${{ secrets.DOCKER_USER }}
             - uses: actions/setup-go@v3
               with:
-                go-version: "1.17"
+                go-version: "1.18"
             - name: Install create-package
               run: |
                 #!/usr/bin/env bash
 
                 set -euo pipefail
 
-                GO111MODULE=on go get -u -ldflags="-s -w" github.com/paketo-buildpacks/libpak/cmd/create-package
-            - name: Install crane
-              run: |
-                #!/usr/bin/env bash
-
-                set -euo pipefail
-
-                echo "Installing crane ${CRANE_VERSION}"
-
-                mkdir -p "${HOME}"/bin
-                echo "${HOME}/bin" >> "${GITHUB_PATH}"
-
-                curl \
-                  --show-error \
-                  --silent \
-                  --location \
-                  "https://github.com/google/go-containerregistry/releases/download/v${CRANE_VERSION}/go-containerregistry_Linux_x86_64.tar.gz" \
-                | tar -C "${HOME}/bin" -xz crane
-              env:
-                CRANE_VERSION: 0.10.0
+                go install -ldflags="-s -w" github.com/paketo-buildpacks/libpak/cmd/create-package@latest
             - name: Install pack
               run: |
                 #!/usr/bin/env bash
@@ -76,8 +58,7 @@ jobs:
                 mkdir -p "${HOME}"/.pack
                 echo "experimental = true" >> "${HOME}"/.pack/config.toml
             - uses: actions/checkout@v3
-            - if: ${{ false }}
-              uses: actions/cache@v3
+            - uses: actions/cache@v3
               with:
                 key: ${{ runner.os }}-go-${{ hashFiles('**/buildpack.toml', '**/package.toml') }}
                 path: |-
@@ -139,12 +120,10 @@ jobs:
                 [[ -e ${PACKAGE_FILE} ]] && cp ${PACKAGE_FILE} "${HOME}"/package.toml
                 printf '[buildpack]\nuri = "%s"\n\n[platform]\nos = "%s"\n' "${HOME}"/buildpack "${OS}" >> "${HOME}"/package.toml
               env:
-                INCLUDE_DEPENDENCIES: "false"
+                INCLUDE_DEPENDENCIES: "true"
                 OS: linux
-                SOURCE_PATH: ""
                 VERSION: ${{ steps.version.outputs.version }}
             - name: Package Buildpack
-              id: package
               run: |-
                 #!/usr/bin/env bash
 
@@ -188,37 +167,48 @@ jobs:
                     --format "${FORMAT}"
                 fi
               env:
-                PACKAGES: docker.io/buildpacksio/profile
-                PUBLISH: "true"
+                FORMAT: image
+                PACKAGES: test
                 VERSION: ${{ steps.version.outputs.version }}
-                VERSION_MAJOR: ${{ steps.version.outputs.version-major }}
-                VERSION_MINOR: ${{ steps.version.outputs.version-minor }}
-            - name: Update release with digest
+    unit:
+        name: Unit Test
+        runs-on:
+            - ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/cache@v3
+              with:
+                key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+                path: ${{ env.HOME }}/go/pkg/mod
+                restore-keys: ${{ runner.os }}-go-
+            - uses: actions/setup-go@v3
+              with:
+                go-version: "1.18"
+            - name: Install richgo
               run: |
                 #!/usr/bin/env bash
 
                 set -euo pipefail
 
-                PAYLOAD=$(cat "${GITHUB_EVENT_PATH}")
+                echo "Installing richgo ${RICHGO_VERSION}"
 
-                RELEASE_ID=$(jq -n -r --argjson PAYLOAD "${PAYLOAD}" '$PAYLOAD.release.id')
-                RELEASE_TAG_NAME=$(jq -n -r --argjson PAYLOAD "${PAYLOAD}" '$PAYLOAD.release.tag_name')
-                RELEASE_NAME=$(jq -n -r --argjson PAYLOAD "${PAYLOAD}" '$PAYLOAD.release.name')
-                RELEASE_BODY=$(jq -n -r --argjson PAYLOAD "${PAYLOAD}" '$PAYLOAD.release.body')
+                mkdir -p "${HOME}"/bin
+                echo "${HOME}/bin" >> "${GITHUB_PATH}"
 
-                gh api \
-                  --method PATCH \
-                  "/repos/:owner/:repo/releases/${RELEASE_ID}" \
-                  --field "tag_name=${RELEASE_TAG_NAME}" \
-                  --field "name=${RELEASE_NAME}" \
-                  --field "body=${RELEASE_BODY//<!-- DIGEST PLACEHOLDER -->/\`${DIGEST}\`}"
+                curl \
+                  --location \
+                  --show-error \
+                  --silent \
+                  "https://github.com/kyoh86/richgo/releases/download/v${RICHGO_VERSION}/richgo_${RICHGO_VERSION}_linux_amd64.tar.gz" \
+                | tar -C "${HOME}"/bin -xz richgo
               env:
-                DIGEST: ${{ steps.package.outputs.digest }}
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            - if: ${{ true }}
-              uses: docker://ghcr.io/buildpacks/actions/registry/request-add-entry:4.0.1
-              with:
-                address: docker.io/buildpacksio/profile@${{ steps.package.outputs.digest }}
-                id: buildpacksio/profile
-                token: ${{ secrets.GITHUB_TOKEN }}
-                version: ${{ steps.version.outputs.version }}
+                RICHGO_VERSION: 0.3.10
+            - name: Run Tests
+              run: |
+                #!/usr/bin/env bash
+
+                set -euo pipefail
+
+                richgo test ./...
+              env:
+                RICHGO_FORCE_COLOR: "1"
