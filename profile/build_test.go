@@ -22,7 +22,6 @@ import (
 	"testing"
 
 	. "github.com/onsi/gomega"
-	"github.com/onsi/gomega/types"
 
 	"github.com/buildpacks/profile/profile"
 
@@ -30,27 +29,32 @@ import (
 )
 
 type BuildTest struct {
+	test    *testing.T
 	context libcnb.BuildContext
-	expect  func(actual interface{}, extra ...interface{}) types.Assertion
+	expect  ExpectFunc
 }
 
-func (b BuildTest) SetupGomega(t *testing.T) BuildTest {
-	b.expect = NewGomegaWithT(t).Expect
-	return b
+func NewBuildTestBuilder(t *testing.T) BuildTest {
+	return BuildTest{
+		test:   t,
+		expect: NewGomegaWithT(t).Expect,
+	}
 }
 
 func (b BuildTest) SetupWorkspace() BuildTest {
 	var err error
-	b.context.Buildpack.Path = "../"
-	b.context.ApplicationPath, err = os.MkdirTemp("", "profile")
-	b.expect(err).NotTo(HaveOccurred())
-	profilePath := filepath.Join(b.context.ApplicationPath, ".profile")
 
+	b.context.Buildpack.Path = "../"
+	b.context.ApplicationPath = b.test.TempDir()
+	b.context.Layers.Path = b.test.TempDir()
+
+	err = os.MkdirAll(b.context.Layers.Path, os.ModePerm)
+	b.expect(err).ToNot(HaveOccurred())
+
+	profilePath := filepath.Join(b.context.ApplicationPath, ".profile")
 	f, err := os.Create(profilePath)
 	b.expect(err).NotTo(HaveOccurred())
 	defer f.Close()
-
-	b.expect(err).To(BeNil())
 
 	_, err = f.WriteString(
 		`
@@ -64,24 +68,13 @@ export HELLO
 	return b
 }
 
-func (b BuildTest) RemoveWorkspace() BuildTest {
-	b.expect(os.RemoveAll(b.context.ApplicationPath)).To(Succeed())
-	return b
-}
-
-func (b BuildTest) Build() (libcnb.BuildContext, ExpectFunc, AfterFunc) {
-	outputPath, _ := os.MkdirTemp("", "dotprofile_out")
-	os.MkdirAll(outputPath, os.ModePerm)
-	b.context.Layers.Path = outputPath
-	return b.context, b.expect, func() {
-		b.RemoveWorkspace()
-		os.RemoveAll(outputPath)
-	}
+func (b BuildTest) Build() (libcnb.BuildContext, ExpectFunc) {
+	return b.context, b.expect
 }
 
 func TestBuildExecutes(t *testing.T) {
-	ctx, Expect, After := BuildTest{}.SetupGomega(t).SetupWorkspace().Build()
-	defer After()
+	ctx, Expect := NewBuildTestBuilder(t).SetupWorkspace().Build()
+
 	Expect(profile.Build(ctx)).To(Equal(libcnb.BuildResult{
 		Layers: []libcnb.Layer{{
 			LayerTypes: libcnb.LayerTypes{
