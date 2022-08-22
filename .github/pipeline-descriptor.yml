@@ -1,6 +1,6 @@
 github:
-  username: buildpack-bot
-  token:    ${{ secrets.GITHUB_TOKEN }}
+  username: ${{ secrets.IMPLEMENTATION_GITHUB_USERNAME }}
+  token:    ${{ secrets.IMPLEMENTATION_GITHUB_TOKEN }}
 
 codeowners:
 - path:  "*"
