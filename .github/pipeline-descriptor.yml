@@ -9,7 +9,7 @@ codeowners:
 package:
   repository:     docker.io/buildpacksio/profile
   register:       true
-  registry_token: ${{ secrets.GITHUB_TOKEN }}
+  registry_token: ${{ secrets.IMPLEMENTATION_GITHUB_TOKEN }}
 
 docker_credentials:
 - registry: docker.io
