@@ -6,11 +6,12 @@ The Profile Buildpack is a Cloud Native Buildpack that implements the behavior o
 
 This buildpack will participate all the following conditions are met
 
-*
+* `bash` is available in the container
+* a `.profile` script file exists at the root of the application
 
 The buildpack will do the following:
 
-*
+* contribute an `exec.d` script which will at runtime source the `.profile` script and ensure environment variables set by the script are available to your application
 
 ## License
 
