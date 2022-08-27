@@ -220,5 +220,5 @@ jobs:
               with:
                 address: docker.io/buildpacksio/profile@${{ steps.package.outputs.digest }}
                 id: buildpacksio/profile
-                token: ${{ secrets.GITHUB_TOKEN }}
+                token: ${{ secrets.IMPLEMENTATION_GITHUB_TOKEN }}
                 version: ${{ steps.version.outputs.version }}
