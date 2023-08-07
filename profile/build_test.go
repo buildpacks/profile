@@ -25,7 +25,7 @@ import (
 
 	"github.com/buildpacks/profile/profile"
 
-	"github.com/buildpacks/libcnb"
+	"github.com/buildpacks/libcnb/v2"
 )
 
 type BuildTest struct {

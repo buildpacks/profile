@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2022 the original author or authors.
+ * Copyright 2018-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package main
 import (
 	"github.com/buildpacks/profile/profile"
 
-	"github.com/buildpacks/libcnb"
+	"github.com/buildpacks/libcnb/v2"
 )
 
 func main() {
-	libcnb.Main(profile.Detect, profile.Build)
+	libcnb.BuildpackMain(profile.Detect, profile.Build)
 }
