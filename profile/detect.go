@@ -21,7 +21,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/buildpacks/libcnb"
+	"github.com/buildpacks/libcnb/v2"
 )
 
 func Detect(context libcnb.DetectContext) (libcnb.DetectResult, error) {

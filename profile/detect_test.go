@@ -26,7 +26,7 @@ import (
 
 	"github.com/buildpacks/profile/profile"
 
-	"github.com/buildpacks/libcnb"
+	"github.com/buildpacks/libcnb/v2"
 )
 
 type ExpectFunc func(actual interface{}, extra ...interface{}) types.Assertion
