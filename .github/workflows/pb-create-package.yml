@@ -16,7 +16,7 @@ jobs:
                 password: ${{ secrets.DOCKER_PASS }}
                 registry: docker.io
                 username: ${{ secrets.DOCKER_USER }}
-            - uses: actions/setup-go@v4
+            - uses: actions/setup-go@v5
               with:
                 go-version: "1.20"
             - name: Install create-package
@@ -44,7 +44,7 @@ jobs:
                   "https://github.com/google/go-containerregistry/releases/download/v${CRANE_VERSION}/go-containerregistry_Linux_x86_64.tar.gz" \
                 | tar -C "${HOME}/bin" -xz crane
               env:
-                CRANE_VERSION: 0.8.0
+                CRANE_VERSION: 0.18.0
             - name: Install pack
               run: |
                 #!/usr/bin/env bash
@@ -63,7 +63,7 @@ jobs:
                   "https://github.com/buildpacks/pack/releases/download/v${PACK_VERSION}/pack-v${PACK_VERSION}-linux.tgz" \
                 | tar -C "${HOME}"/bin -xz pack
               env:
-                PACK_VERSION: 0.29.0
+                PACK_VERSION: 0.32.1
             - name: Enable pack Experimental
               if: ${{ false }}
               run: |
@@ -75,9 +75,9 @@ jobs:
 
                 mkdir -p "${HOME}"/.pack
                 echo "experimental = true" >> "${HOME}"/.pack/config.toml
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - if: ${{ false }}
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                 key: ${{ runner.os }}-go-${{ hashFiles('**/buildpack.toml', '**/package.toml') }}
                 path: |-
