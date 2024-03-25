@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/buildpacks/libcnb/v2 v2.0.0-alpha.2
-	github.com/onsi/gomega v1.31.1
+	github.com/onsi/gomega v1.32.0
 )
 
 require github.com/Masterminds/semver v1.5.0 // indirect
