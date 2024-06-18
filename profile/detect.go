@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2022 the original author or authors.
+ * Copyright 2018-2024 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,14 @@ import (
 )
 
 func Detect(context libcnb.DetectContext) (libcnb.DetectResult, error) {
-	// NOTE: the logger is not passed into this function, that will likely be a change in libcnbv2
-
 	_, shErr := exec.LookPath("bash")
 
 	profilePath := filepath.Join(context.ApplicationPath, scriptName)
 	if _, err := os.Stat(profilePath); shErr == nil && !os.IsNotExist(err) {
+		context.Logger.Debug("PASSED: a .profile application exists and bash is available")
 		return libcnb.DetectResult{Pass: true, Plans: []libcnb.BuildPlan{}}, nil
 	}
 
+	context.Logger.Debug("SKIPPED: a .profile application does not exist or bash is not available")
 	return libcnb.DetectResult{Pass: false}, nil
 }
