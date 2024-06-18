@@ -24,7 +24,6 @@ import (
 )
 
 func Build(context libcnb.BuildContext) (libcnb.BuildResult, error) {
-	// NOTE: the logger is not passed into this function, that will likely be a change in libcnbv2
 	result := libcnb.NewBuildResult()
 
 	layer, err := context.Layers.Layer(profileName)

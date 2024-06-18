@@ -1,4 +1,4 @@
-# Copyright 2018-2022 the original author or authors.
+# Copyright 2018-2024 the original author or authors.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,23 +15,29 @@
 api = "0.8"
 
 [buildpack]
-id       = "buildpacksio/profile"
-name     = "Profile Buildpack"
-version  = "{{.version}}"
-homepage = "https://github.com/buildpacks/profile"
+  description = "A Cloud Native Buildpack that handles profile scripts"
+  homepage = "https://github.com/buildpacks/profile"
+  id = "buildpacksio/profile"
+  keywords = ["profile", "bash"]
+  name = "Profile Buildpack"
+  sbom-formats = ["application/vnd.cyclonedx+json", "application/vnd.syft+json"]
+  version = "{{.version}}"
 
-[[stacks]]
-id = "*"
+  [[buildpack.licenses]]
+    type = "Apache-2.0"
+    uri = "https://github.com/paketo-buildpacks/apache-tomcat/blob/main/LICENSE"
 
 [metadata]
-pre-package   = "scripts/build.sh"
-include-files = [
-  "LICENSE",
-  "NOTICE",
-  "README.md",
-  "bin/build",
-  "bin/detect",
-  "bin/main",
-  "scripts/profiled-wrapper.sh",
-  "buildpack.toml",
-]
+  pre-package = "scripts/build.sh"
+  include-files = ["LICENSE", "NOTICE", "README.md", "linux/amd64/bin/build", "linux/amd64/bin/detect", "linux/amd64/bin/main", "linux/arm64/bin/build", "linux/arm64/bin/detect", "linux/arm64/bin/main", "scripts/profiled-wrapper.sh", "buildpack.toml"]
+
+[[stacks]]
+  id = "*"
+
+[[targets]]
+  arch = "amd64"
+  os = "linux"
+
+[[targets]]
+  arch = "arm64"
+  os = "linux"
