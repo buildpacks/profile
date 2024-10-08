@@ -6,7 +6,7 @@ linters:
   enable:
     - bodyclose
     - dogsled
-    - exportloopref
+    - copyloopvar
     - gocritic
     - goimports
     - gosec
@@ -24,5 +24,9 @@ linters:
     - whitespace
 
 linters-settings:
+  revive:
+    rules:
+      - name: dot-imports
+        disabled: true
   goimports:
     local-prefixes: github.com/buildpacks/profile
