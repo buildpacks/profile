@@ -3,7 +3,7 @@ module github.com/buildpacks/profile
 go 1.23
 
 require (
-	github.com/buildpacks/libcnb/v2 v2.0.0-rc.1
+	github.com/buildpacks/libcnb/v2 v2.0.0
 	github.com/onsi/gomega v1.34.2
 )
 
