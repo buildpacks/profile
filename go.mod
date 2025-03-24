@@ -1,18 +1,16 @@
 module github.com/buildpacks/profile
 
-go 1.23.0
-
-toolchain go1.23.7
+go 1.24
 
 require (
 	github.com/buildpacks/libcnb/v2 v2.0.0
-	github.com/onsi/gomega v1.36.2
+	github.com/onsi/gomega v1.36.3
 )
 
 require github.com/Masterminds/semver v1.5.0 // indirect
 
 require (
-	github.com/BurntSushi/toml v1.4.0 // indirect
+	github.com/BurntSushi/toml v1.5.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
