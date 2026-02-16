@@ -4,7 +4,7 @@ go 1.25
 
 require (
 	github.com/buildpacks/libcnb/v2 v2.1.0
-	github.com/onsi/gomega v1.38.3
+	github.com/onsi/gomega v1.39.1
 )
 
 require github.com/Masterminds/semver v1.5.0 // indirect
@@ -15,6 +15,6 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/net v0.48.0 // indirect
-	golang.org/x/text v0.32.0 // indirect
+	golang.org/x/net v0.50.0 // indirect
+	golang.org/x/text v0.34.0 // indirect
 )
