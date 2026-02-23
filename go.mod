@@ -1,6 +1,6 @@
 module github.com/buildpacks/profile
 
-go 1.25
+go 1.26
 
 require (
 	github.com/buildpacks/libcnb/v2 v2.1.0
