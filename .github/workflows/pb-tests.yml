@@ -17,13 +17,14 @@ jobs:
         steps:
             - name: Docker login docker.io
               if: ${{ (github.event_name != 'pull_request' || ! github.event.pull_request.head.repo.fork) && (github.actor != 'dependabot[bot]') }}
-              uses: docker/login-action@v3
+              uses: docker/login-action@v4
               with:
                 password: ${{ secrets.DOCKER_PASS }}
                 registry: docker.io
                 username: ${{ secrets.DOCKER_USER }}
-            - uses: actions/setup-go@v5
+            - uses: actions/setup-go@v7
               with:
+                cache: false
                 go-version: "1.26"
             - name: Install create-package
               run: |
@@ -32,9 +33,9 @@ jobs:
                 set -euo pipefail
 
                 go install -ldflags="-s -w" github.com/paketo-buildpacks/libpak/cmd/create-package@latest
-            - uses: buildpacks/github-actions/setup-pack@v5.11.0
+            - uses: buildpacks/github-actions/setup-pack@v6.0.0
               with:
-                pack-version: 0.40.0
+                pack-version: 0.40.8
             - name: Enable pack Experimental
               run: |
                 #!/usr/bin/env bash
@@ -43,8 +44,8 @@ jobs:
 
                 echo "Enabling pack experimental features"
                 pack config experimental true
-            - uses: actions/checkout@v4
-            - uses: actions/cache@v4
+            - uses: actions/checkout@v7
+            - uses: actions/cache@v6
               with:
                 key: ${{ runner.os }}-go-${{ hashFiles('**/buildpack.toml', '**/package.toml') }}
                 path: |-
@@ -183,13 +184,13 @@ jobs:
         runs-on:
             - ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
-            - uses: actions/cache@v4
+            - uses: actions/checkout@v7
+            - uses: actions/cache@v6
               with:
                 key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
                 path: ${{ env.HOME }}/go/pkg/mod
                 restore-keys: ${{ runner.os }}-go-
-            - uses: actions/setup-go@v5
+            - uses: actions/setup-go@v7
               with:
                 go-version: "1.26"
             - name: Install richgo
